@@ -32,19 +32,21 @@ class GalleryPageState extends State<GalleryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Photo Gallery'),
-      ),
-      body: SingleChildScrollView(
-        controller: controller,
-        child: Column(
-            //crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              for (int i = 0; i < images.length; i += 2)
-                addImagePerRow(
-                    images.elementAt(i), images.elementAt(i + 1), context),
-            ]),
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Photo Gallery'),
+        ),
+        body: SingleChildScrollView(
+          controller: controller,
+          child: Column(
+              //crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (int i = 0; i < images.length; i += 2)
+                  addImagePerRow(
+                      images.elementAt(i), images.elementAt(i + 1), context),
+              ]),
+        ),
       ),
     );
   }
