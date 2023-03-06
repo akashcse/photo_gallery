@@ -1,5 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_gallery/components/reusable_card.dart';
+
+import '../services/unsplash.dart';
 
 class GalleryPage extends StatefulWidget {
   const GalleryPage({super.key});
@@ -9,6 +12,15 @@ class GalleryPage extends StatefulWidget {
 }
 
 class GalleryPageState extends State<GalleryPage> {
+  int pageNo = 0;
+  var images = <String>{};
+
+  @override
+  void initState() {
+    super.initState();
+    loadImages();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,14 +29,40 @@ class GalleryPageState extends State<GalleryPage> {
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          addImagePerRow(
-              'https://images.unsplash.com/photo-1674574124340-c00cc2dae99c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=Mnw0MTg3Mzd8MXwxfGFsbHwxfHx8fHx8Mnx8MTY3ODA3NzA2NQ&ixlib=rb-4.0.3&q=80&w=1080',
-              'https://images.unsplash.com/photo-1674574124340-c00cc2dae99c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=Mnw0MTg3Mzd8MXwxfGFsbHwxfHx8fHx8Mnx8MTY3ODA3NzA2NQ&ixlib=rb-4.0.3&q=80&w=1080'),
-        ],
+        children: createListFromResponse(images),
       ),
     );
   }
+
+  Future<void> loadImages() async {
+    List<dynamic> galleryData =
+        await PhotoGalleryModel().getImagesByPage(pageNo);
+
+    for (int i = 0; i < galleryData.length; i++) {
+      if (kDebugMode) {
+        print(galleryData.elementAt(i)['urls']['regular']);
+      }
+      images.add(galleryData.elementAt(i)['urls']['regular']);
+    }
+    updateUI();
+  }
+
+  void updateUI() {
+    setState(() {
+      ++pageNo;
+    });
+  }
+}
+
+List<Widget> createListFromResponse(images) {
+  if (kDebugMode) {
+    print('Called $images.length');
+  }
+  var data = <Widget>[];
+  for (int i = 0; i < images.length; i += 2) {
+    data.add(addImagePerRow(images.elementAt(i), images.elementAt(i + 1)));
+  }
+  return data.toList();
 }
 
 Widget addImagePerRow(String url1, String url2) {
@@ -33,17 +71,13 @@ Widget addImagePerRow(String url1, String url2) {
       children: <Widget>[
         Expanded(
           child: ReusableCard(
-            cardChild: Image.network(
-              'https://images.unsplash.com/photo-1674574124340-c00cc2dae99c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=Mnw0MTg3Mzd8MXwxfGFsbHwxfHx8fHx8Mnx8MTY3ODA3NzA2NQ&ixlib=rb-4.0.3&q=80&w=1080',
-            ),
+            cardChild: Image.network(url1, width: double.infinity),
             //cardChild:
           ),
         ),
         Expanded(
           child: ReusableCard(
-            cardChild: Image.network(
-              'https://images.unsplash.com/photo-1674574124340-c00cc2dae99c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=Mnw0MTg3Mzd8MXwxfGFsbHwxfHx8fHx8Mnx8MTY3ODA3NzA2NQ&ixlib=rb-4.0.3&q=80&w=1080',
-            ),
+            cardChild: Image.network(url2, width: double.infinity),
             //cardChild:
           ),
         ),
