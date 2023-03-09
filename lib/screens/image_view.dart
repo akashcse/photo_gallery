@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
@@ -22,7 +24,11 @@ class ImageView extends StatelessWidget {
   storeImage(String url, BuildContext context) async {
     var response = await http.get(Uri.parse(url));
     Directory? documentaryDirectory = await getExternalStorageDirectory();
-    File file = File(path.join(documentaryDirectory!.path, path.basename(url)));
+    File file = File(path.join(documentaryDirectory!.path,
+        '${DateTime.now().millisecondsSinceEpoch}.jpeg'));
+    if (kDebugMode) {
+      print(file.path);
+    }
     await file.writeAsBytes(response.bodyBytes).then(
           (value) => showDialog(
             context: context,
@@ -76,16 +82,17 @@ class ImageView extends StatelessWidget {
           children: <Widget>[
             Expanded(
               child: InteractiveViewer(
-                panEnabled: false,
-                minScale: 0.5,
-                maxScale: 5,
-                boundaryMargin: const EdgeInsets.all(10.0),
-                alignment: Alignment.center,
-                child: Image.network(
-                  url,
-                  fit: BoxFit.cover,
-                ),
-              ),
+                  panEnabled: false,
+                  minScale: 0.5,
+                  maxScale: 5,
+                  boundaryMargin: const EdgeInsets.all(10.0),
+                  alignment: Alignment.center,
+                  child: CachedNetworkImage(
+                    placeholder: (context, url) =>
+                        const CircularProgressIndicator(),
+                    imageUrl: url,
+                    fit: BoxFit.fill,
+                  )),
             ),
           ],
         ),

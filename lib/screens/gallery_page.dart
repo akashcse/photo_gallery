@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_gallery/components/reusable_card.dart';
 
@@ -75,10 +76,10 @@ Widget addImagePerRow(String url1, String url2, BuildContext context) {
         child: GestureDetector(
           onTap: () => imageViewPage(url1, context),
           child: ReusableCard(
-            cardChild: Image.network(
-              url1,
-              fit: BoxFit.cover,
-              //width: double.infinity,
+            cardChild: CachedNetworkImage(
+              placeholder: (context, url) => const CircularProgressIndicator(),
+              imageUrl: url1,
+              fit: BoxFit.fill,
             ),
             //cardChild:
           ),
@@ -88,10 +89,10 @@ Widget addImagePerRow(String url1, String url2, BuildContext context) {
         child: GestureDetector(
           onTap: () => imageViewPage(url2, context),
           child: ReusableCard(
-            cardChild: Image.network(
-              url2,
-              fit: BoxFit.cover,
-              //width: double.infinity,
+            cardChild: CachedNetworkImage(
+              placeholder: (context, url) => const CircularProgressIndicator(),
+              imageUrl: url2,
+              fit: BoxFit.fill,
             ),
             //cardChild:
           ),
